@@ -15,18 +15,32 @@ def cst_get_folder_size(folder_path:str, unit="MB", loud=True):
     return size
 
 
-def cst_get_subfolder_size(folder_path:str, unit="MB", loud=True):
-    subfolders = [obj.path for obj in os.scandir(folder_path) if obj.is_dir()]
-    sizes = []
-    for folder in subfolders:
-        sizes.append({"folder": folder, "size": cst_get_folder_size(folder, unit, loud)})
-    return sizes
+def cst_subfolder_size_manager(unit="MB", loud=True):
+    while True:
+        print("\n--- SIZE MANAGER\n")
+        folder_path = input("Insert doc folder path (ENTER to exit): ")
+        if folder_path == "": break
+        else :
+            try:
+                subfolders = [obj.path for obj in os.scandir(folder_path) if obj.is_dir()]
+                sizes = []
+                for folder in subfolders:
+                    sizes.append({"folder": folder, "size": cst_get_folder_size(folder, unit, loud)})
+            except Exception as err:
+                print(err)
+                continue
 
 def cst_multirename_manager():
-
     while True:
-        folder_path = input("\n------ PYTHON FILE RENAMER ------\n\nInsert doc folder path: ")
-        os.chdir(folder_path)
+        print("\n--- FILE RENAMER\n")
+        folder_path = input("Insert doc folder path (ENTER to exit): ")
+        if folder_path == "": break
+        else :
+            try: os.chdir(folder_path)
+            except Exception as err:
+                print(err)
+                continue
+
         print(f"Setted work directory: {folder_path}")
 
         recursive = input("\nDo you want contents of folders? (TRUE, FALSE)\n")
@@ -65,5 +79,6 @@ def cst_multirename_manager():
                 os.rename(old_name, new_name)
                 print(f"Renamed '{old_name}' to '{new_name}'")
         print("\nFile renaming completed.\n\n\n")
+
 
 
