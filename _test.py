@@ -1,0 +1,3 @@
+import file_manager
+
+file_manager.cst_jpg_converter_manager()

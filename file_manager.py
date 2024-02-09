@@ -48,7 +48,7 @@ def cst_multirename_manager():
         elif recursive.upper() in ("F", "FALSE"): recursive = False
         else:
             print("Command not recognized")
-            break
+            continue
 
         # Finding files
         if recursive:
@@ -81,4 +81,51 @@ def cst_multirename_manager():
         print("\nFile renaming completed.\n\n\n")
 
 
+def cst_jpg_converter_manager():
+    from PIL import Image
+    img_formats = (
+        ".jpg", ".jpeg", ".png", ".gif", ".webp", ".tiff", ".bmp", ".svg",
+        ".psd", ".ai", ".eps", ".raw", ".cr2", ".nef", ".orf", ".sr2",
+        ".heif", ".avif", ".ico", ".tif", ".indd", ".jp2", ".j2k", ".jpf",
+        ".jpx", ".jpm", ".mj2", ".svgz", ".dwg", ".dxf", ".xcf", ".wmf",
+        ".emf", ".pdf"
+    )
+    while True:
+        print("\n--- JPEG CONVERTER\n")
+        folder_path = input("Insert doc folder path (ENTER to exit): ")
+        if folder_path == "": break
+        else:
+            try: os.chdir(folder_path)
+            except Exception as err:
+                print(err)
+                continue
+        print(f"Setted work directory: {folder_path}")
 
+        recursive = input("\nDo you want contents of folders? (TRUE, FALSE)\n")
+        if recursive.upper() in ("T", "TRUE"):
+            recursive = True
+        elif recursive.upper() in ("F", "FALSE"):
+            recursive = False
+        else:
+            print("Command not recognized")
+            continue
+
+        # Finding files
+        if recursive:
+            file_list = []
+            for root, dirs, files in os.walk(os.getcwd()):
+                for file in files:
+                    img_list.append(os.path.join(root, file))
+        else:
+            file_list = os.listdir()
+        img_list = [file for file in file_list if os.path.splitext(file)[1] in img_formats]
+
+        for image_path in img_list:
+            name, extension = os.path.splitext(image_path)
+            try:
+                with Image.open(image_path) as img:
+                    img = img.convert('RGB')
+                    img.save(f'{name}.jpg', 'JPEG')
+            except Exception as err:
+                print(err)
+        print("\nJPEG conversion completed.\n\n\n")
