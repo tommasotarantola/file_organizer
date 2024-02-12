@@ -1,4 +1,15 @@
 import os
+from PIL import Image
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+
+img_formats = (
+    ".jpg", ".jpeg", ".png", ".gif", ".webp", ".tiff", ".bmp", ".svg",
+    ".psd", ".ai", ".eps", ".raw", ".cr2", ".nef", ".orf", ".sr2",
+    ".heif", ".avif", ".ico", ".tif", ".indd", ".jp2", ".j2k", ".jpf",
+    ".jpx", ".jpm", ".mj2", ".svgz", ".dwg", ".dxf", ".xcf", ".wmf",
+    ".emf"
+)
 
 def cst_get_folder_size(folder_path:str, unit="MB", loud=True):
     size = 0
@@ -17,7 +28,7 @@ def cst_get_folder_size(folder_path:str, unit="MB", loud=True):
 
 def cst_subfolder_size_manager(unit="MB", loud=True):
     while True:
-        print("\n--- SIZE MANAGER\n")
+        print("\n------ SIZE MANAGER\n")
         folder_path = input("Insert doc folder path (ENTER to exit): ")
         if folder_path == "": break
         else :
@@ -32,7 +43,7 @@ def cst_subfolder_size_manager(unit="MB", loud=True):
 
 def cst_multirename_manager():
     while True:
-        print("\n--- FILE RENAMER\n")
+        print("\n------ FILE RENAMER\n")
         folder_path = input("Insert doc folder path (ENTER to exit): ")
         if folder_path == "": break
         else :
@@ -82,16 +93,8 @@ def cst_multirename_manager():
 
 
 def cst_jpg_converter_manager():
-    from PIL import Image
-    img_formats = (
-        ".jpg", ".jpeg", ".png", ".gif", ".webp", ".tiff", ".bmp", ".svg",
-        ".psd", ".ai", ".eps", ".raw", ".cr2", ".nef", ".orf", ".sr2",
-        ".heif", ".avif", ".ico", ".tif", ".indd", ".jp2", ".j2k", ".jpf",
-        ".jpx", ".jpm", ".mj2", ".svgz", ".dwg", ".dxf", ".xcf", ".wmf",
-        ".emf", ".pdf"
-    )
     while True:
-        print("\n--- JPEG CONVERTER\n")
+        print("\n------ JPEG CONVERTER\n")
         folder_path = input("Insert doc folder path (ENTER to exit): ")
         if folder_path == "": break
         else:
@@ -129,3 +132,43 @@ def cst_jpg_converter_manager():
             except Exception as err:
                 print(err)
         print("\nJPEG conversion completed.\n\n\n")
+
+
+def cst_pdf_generator_manager():
+    while True:
+        print("\n------ PDF GENERATOR\n")
+        folder_path = input("Insert images folder path (ENTER to exit): ")
+        if folder_path == "":
+            break
+        else:
+            try:
+                os.chdir(folder_path)
+            except Exception as err:
+                print(err)
+                continue
+        print(f"Setted work directory: {folder_path}")
+
+        file_list = os.listdir()
+        img_list = [file for file in file_list if os.path.splitext(file)[1] in img_formats]
+        file_out = folder_path + '\\' + "output.pdf"
+        pdf_width, pdf_height = A4
+        paper = canvas.Canvas(file_out, pagesize=A4)
+
+        for image_file in img_list:
+            img = Image.open(image_file)
+            img_width, img_height = img.size
+            scale = min(pdf_width / img_width, pdf_height / img_height)  # scale to A4 dimension
+            new_img_width = img_width * scale
+            new_img_height = img_height * scale
+            x = (pdf_width - new_img_width) / 2
+            y = (pdf_height - new_img_height) / 2
+
+            paper.drawImage(image_file, x, y, width=new_img_width, height=new_img_height)
+            paper.showPage()
+
+        try:
+            paper.save()
+            print("PDF generated.")
+        except Exception as err:
+            print("Impossible to write pdf file.")
+            print(err)
