@@ -14,4 +14,4 @@ while True:
     elif action == "2": file_manager.cst_subfolder_size_manager()
     elif action == "3": file_manager.cst_jpg_converter_manager()
     elif action == "4": file_manager.cst_pdf_generator_manager()
-    else : print("Not a valid action.")
+    else: print("Not a valid action.")

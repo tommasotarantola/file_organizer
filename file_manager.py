@@ -155,20 +155,20 @@ def cst_pdf_generator_manager():
         paper = canvas.Canvas(file_out, pagesize=A4)
 
         for image_file in img_list:
-            img = Image.open(image_file)
-            img_width, img_height = img.size
-            scale = min(pdf_width / img_width, pdf_height / img_height)  # scale to A4 dimension
-            new_img_width = img_width * scale
-            new_img_height = img_height * scale
-            x = (pdf_width - new_img_width) / 2
-            y = (pdf_height - new_img_height) / 2
+            with Image.open(image_file) as img:
+                img_width, img_height = img.size
+                scale = min(pdf_width / img_width, pdf_height / img_height)  # scale to A4 dimension
+                new_img_width = img_width * scale
+                new_img_height = img_height * scale
+                x = (pdf_width - new_img_width) / 2
+                y = (pdf_height - new_img_height) / 2
 
-            paper.drawImage(image_file, x, y, width=new_img_width, height=new_img_height)
-            paper.showPage()
-
+                paper.drawImage(image_file, x, y, width=new_img_width, height=new_img_height)
+                paper.showPage()
         try:
             paper.save()
             print("PDF generated.")
         except Exception as err:
             print("Impossible to write pdf file.")
             print(err)
+
