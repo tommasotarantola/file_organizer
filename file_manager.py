@@ -92,10 +92,10 @@ def cst_multirename_manager():
         print("\nFile renaming completed.\n\n\n")
 
 
-def cst_jpg_converter_manager():
+def cst_image_type_converter_manager():
     while True:
-        print("\n------ JPEG CONVERTER\n")
-        folder_path = input("Insert doc folder path (ENTER to exit): ")
+        print("\n------ IMAGE TYPE CONVERSION \n")
+        folder_path = input("Insert image folder path (ENTER to exit): ")
         if folder_path == "": break
         else:
             try: os.chdir(folder_path)
@@ -104,35 +104,58 @@ def cst_jpg_converter_manager():
                 continue
         print(f"Setted work directory: {folder_path}")
 
-        recursive = input("\nDo you want contents of folders? (TRUE, FALSE)\n")
-        if recursive.upper() in ("T", "TRUE"):
-            recursive = True
-        elif recursive.upper() in ("F", "FALSE"):
-            recursive = False
-        else:
-            print("Command not recognized")
-            continue
+        format = input(f"\nInsert images desidered output format ('JPEG', 'PNG', 'GIF', 'ICO', 'TIFF', 'BMP', 'WebP')").upper()
 
-        # Finding files
-        if recursive:
-            file_list = []
-            for root, dirs, files in os.walk(os.getcwd()):
-                for file in files:
-                    img_list.append(os.path.join(root, file))
-        else:
-            file_list = os.listdir()
+        file_list = os.listdir()
         img_list = [file for file in file_list if os.path.splitext(file)[1] in img_formats]
 
         for image_path in img_list:
             name, extension = os.path.splitext(image_path)
             try:
                 with Image.open(image_path) as img:
-                    img = img.convert('RGB')
-                    img.save(f'{name}.jpg', 'JPEG')
+                    if format in ['JPEG', 'BMP']:
+                        img = img.convert('RGB')
+                    elif format in ['PNG', 'GIF', 'ICO', 'TIFF', 'WebP']:
+                        img = img.convert('RGBA')
+                    else:
+                        print("Format not recognized.")
+                    img.save(f'{name}.{format.lower()}', format=format)
             except Exception as err:
                 print(err)
-        print("\nJPEG conversion completed.\n\n\n")
+        print("\nImage conversion completed.\n\n\n")
 
+def cst_image_size_converter_manager():
+    while True:
+        print("\n------ IMAGE SIZE CONVERSION \n")
+        folder_path = input("Insert image folder path (ENTER to exit): ")
+        if folder_path == "":
+            break
+        else:
+            try:
+                os.chdir(folder_path)
+            except Exception as err:
+                print(err)
+                continue
+        print(f"Setted work directory: {folder_path}")
+
+        user_sizes = input(f"\nInsert images desidered output size (use this format: 100,50 )")
+        try:
+            sizes = tuple(int(_) for _ in user_sizes).split(",")
+        except Exception as err:
+            print(err)
+
+        file_list = os.listdir()
+        img_list = [file for file in file_list if os.path.splitext(file)[1] in img_formats]
+
+        for image_path in img_list:
+            name, extension = os.path.splitext(image_path)
+            try:
+                with Image.open(image_path) as img:
+                    img = img.resize(sizes, Image.LANCZOS)
+                    img.save(f"{name}_newsize.{extension}")
+            except Exception as err:
+                print(err)
+        print("\nImage conversion completed.\n\n\n")
 
 def cst_pdf_generator_manager():
     while True:
