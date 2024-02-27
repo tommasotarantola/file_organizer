@@ -11,22 +11,16 @@ img_formats = (
     ".emf"
 )
 
-def cst_get_folder_size(folder_path:str, unit="MB", loud=True):
+def cst_get_folder_size(folder_path:str):
     size = 0
     for path, dirs, files in os.walk(folder_path):
         for f in files:
             fp = os.path.join(path, f)
             size += os.path.getsize(fp)
-    if unit == "KB": show_size = size / (1024)
-    elif unit == "MB": show_size = size / (1024 * 1024)
-    elif unit == "GB": show_size = size / (1024 * 1024 * 1024)
-    else: raise("Not valid unit, pleas choose ('KB', 'MB', 'GB')")
-
-    if loud: print(f"{folder_path}: {round(show_size, 2)} {unit}")
     return size
 
 
-def cst_subfolder_size_manager(unit="MB", loud=True):
+def cst_subfolder_size_manager(unit="MB", loud=False):
     while True:
         print("\n------ SIZE MANAGER\n")
         folder_path = input("Insert doc folder path (ENTER to exit): ")
@@ -35,8 +29,14 @@ def cst_subfolder_size_manager(unit="MB", loud=True):
             try:
                 subfolders = [obj.path for obj in os.scandir(folder_path) if obj.is_dir()]
                 sizes = []
-                for folder in subfolders:
-                    sizes.append({"folder": folder, "size": cst_get_folder_size(folder, unit, loud)})
+                for sub_folder in subfolders:
+                    size = cst_get_folder_size(sub_folder)
+                    sizes.append({"folder": sub_folder, "size": size})
+                    if unit == "KB": show_size = size / (1024)
+                    elif unit == "MB": show_size = size / (1024 * 1024)
+                    elif unit == "GB": show_size = size / (1024 * 1024 * 1024)
+                    else: raise ("Not valid unit, pleas choose ('KB', 'MB', 'GB')")
+                    print(f"{os.path.relpath(sub_folder, folder_path)}: {round(show_size, 2)} {unit}")
             except Exception as err:
                 print(err)
                 continue
