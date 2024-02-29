@@ -2,6 +2,7 @@ import os
 from PIL import Image
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
+from PyPDF2 import PdfMerger
 
 img_formats = (
     ".jpg", ".jpeg", ".png", ".gif", ".webp", ".tiff", ".bmp", ".svg",
@@ -195,3 +196,31 @@ def cst_pdf_generator_manager():
             print("Impossible to write pdf file.")
             print(err)
 
+def cst_pdf_merger_manager():
+    while True:
+        print("\n------ PDF MERGER\n")
+        folder_path = input("Insert pdf folder path (SPACEBAR to exit): ")
+        if folder_path == " ":
+            break
+        elif not os.path.exists(folder_path):
+            print("Folder not found.")
+            continue
+        else:
+            try:
+                print("Loading >> ", end="")
+                pdf_out_name = "_output.pdf"
+                pdf_merger = PdfMerger()
+                pdf_files = sorted(os.listdir(folder_path))
+                for file in pdf_files:
+                    if file.endswith('.pdf'):
+                        pdf_path = os.path.join(folder_path, file)
+                        pdf_merger.append(pdf_path)
+                output_path = os.path.join(folder_path, pdf_out_name)
+
+                with open(output_path, 'wb') as output_file:
+                    pdf_merger.write(output_file)
+
+                print(f"merged PDF saved to {pdf_out_name}")
+            except Exception as err:
+                print(err)
+                print("Action failed.")
